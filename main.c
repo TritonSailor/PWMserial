@@ -32,10 +32,13 @@ static uint32_t percentage2=0;
 static uint32_t percentage3=0;
 static uint32_t percentage4=0;
 static uint32_t percentage5=0;
-
+static uint32_t increment=2;
 
 static uint8_t c;
+static uint8_t orangeControl;
+
 static bool newChar = FALSE;
+static bool newPercentage = FALSE;
 /*===========================================================================*/
 /* ADC related code                                                          */
 /*===========================================================================*/
@@ -83,48 +86,6 @@ static THD_FUNCTION(Thd6,arg) {
         c = sdGet(&SD2); //get the character
         sdPut(&SD2, c);  //  put the character on sd2
         newChar = TRUE;
-      /*  if(c=='6') {
-            palTogglePad(GPIOD, GPIOD_LED6);
-        }*/
-            /*switch(c){
-                    case 'a':
-                  	      palSetPad(GPIOD, GPIOD_LED3);
-                            break;
-
-                    case 'A':
-                            palClearPad(GPIOD, GPIOD_LED3);
-                            break;
-                    case 's':
-                            palSetPad(GPIOD, GPIOD_LED4);
-                            break;
-                    case 'S':
-                            palClearPad(GPIOD, GPIOD_LED4);
-                            break;
-                    case 'd':
-                  	      palSetPad(GPIOD, GPIOD_LED5);
-                            break;
-
-                    case 'D':
-                            palClearPad(GPIOD, GPIOD_LED5);
-                            break;
-                    case 'f':
-                            palSetPad(GPIOD, GPIOD_LED6);
-                            break;
-                    case 'F':
-                            palClearPad(GPIOD, GPIOD_LED6);
-                            break;
-                    case 'g':
-                            palSetPad(GPIOD, GPIOD_LED6);
-                            break;
-                    case 'G':
-                            palClearPad(GPIOD, GPIOD_LED6);
-                            break;
-
-
-                    default:
-                            chprintf(chp, "invalidChar\n");
-
-        }*/
     }
 }
 /*===========================================================================*/
@@ -350,32 +311,51 @@ static THD_FUNCTION(Thd1, arg) {
 
   while(TRUE) {
     //percentage = lastvalue * 10000 / 3;
-    if(percentage < 100){
+    //if(percentage < 100){
+    if(orangeControl == 'A'){
       percentage = 0;
       pwmDisableChannel(&PWMD1, 0);
       palClearPad(GPIOD, GPIOD_LED3);
     }
 
-    else if(percentage > 9900){
+    else if(orangeControl =='q'){
+      percentage = percentage + 500;
+      orangeControl='p';
+
+    /*else if(percentage > 9900){
       percentage = 10000;
       pwmDisableChannel(&PWMD1, 0);
       palSetPad(GPIOD, GPIOD_LED3);
 
+*/
     }
-    else if(percentage == 555){
+    else if(orangeControl =='z'){
+      if (percentage > 0) percentage = percentage - 500;
+      orangeControl='p';
+    }
+
+    else if(orangeControl == 'h'){
+      percentage = 0;
       pwmDisableChannel(&PWMD1, 0);
-  	  //chThdSleepMilliseconds(500);
-      while(percentage==555){
-      //pwmDisableChannel(&PWMD1, 0);
-      //palTogglePad(GPIOD, GPIOD_LED3);
-      //palClearPad(GPIOD, GPIOD_LED3);
-  	  //chThdSleepMilliseconds(500);
   	  palTogglePad(GPIOD, GPIOD_LED3);
-      //palSetPad(GPIOD, GPIOD_LED3);
   	  chThdSleepMilliseconds(500);
-      }
     }
-    else{
+
+    else if(orangeControl == 'y'){
+      pwmEnableChannel(&PWMD1, 0, PWM_PERCENTAGE_TO_WIDTH(&PWMD1, percentage));
+      pwmEnableChannelNotification(&PWMD1, 0);
+      pwmEnablePeriodicNotification(&PWMD1);
+      if(percentage >= 0 && percentage <= 9900){
+    	  percentage = percentage + increment;
+          }
+      else if (percentage < 0 || percentage > 9900){
+	  increment = -increment;
+      }
+  	  chThdSleepMilliseconds(1);
+    }
+
+    else if(orangeControl!='h'||'A'){
+
       pwmEnableChannel(&PWMD1, 0, PWM_PERCENTAGE_TO_WIDTH(&PWMD1, percentage));
       pwmEnableChannelNotification(&PWMD1, 0);
       pwmEnablePeriodicNotification(&PWMD1);
@@ -383,8 +363,7 @@ static THD_FUNCTION(Thd1, arg) {
     chThdSleepMilliseconds(1);
   }
 
-
-  chThdSleepMilliseconds(1);
+  //chThdSleepMilliseconds(1);
 }
 
 static THD_WORKING_AREA(waThd2, 256);
@@ -397,7 +376,9 @@ static THD_FUNCTION(Thd2, arg) {
 
   while(TRUE) {
     //percentage = lastvalue * 10000 / 3;
-    if(percentage2 < 100){
+
+
+	  if(percentage2 < 100){
       percentage2 = 0;
       pwmDisableChannel(&PWMD5, 0);
       palClearPad(GPIOD, GPIOD_LED4);
@@ -418,7 +399,7 @@ static THD_FUNCTION(Thd2, arg) {
   }
 
 
-  chThdSleepMilliseconds(1);
+  //chThdSleepMilliseconds(1);
 }
 
 /*static THD_WORKING_AREA(waThd2, 512);
@@ -460,6 +441,19 @@ static THD_FUNCTION(Thd3, arg) {
         palClearPad(GPIOD, GPIOD_LED5);
       }
 
+      else if(percentage3 == 555){
+            pwmDisableChannel(&PWMD4, 0);
+        	  //chThdSleepMilliseconds(500);
+            while(percentage3==555){
+            //pwmDisableChannel(&PWMD1, 0);
+            //palTogglePad(GPIOD, GPIOD_LED3);
+            //palClearPad(GPIOD, GPIOD_LED3);
+        	  //chThdSleepMilliseconds(500);
+        	  palTogglePad(GPIOD, GPIOD_LED5);
+            //palSetPad(GPIOD, GPIOD_LED3);
+        	  chThdSleepMilliseconds(500);
+            }
+      }
       else if(percentage3 > 9900){
         percentage3= 10000;
         pwmDisableChannel(&PWMD4, 0);
@@ -594,19 +588,23 @@ int main(void) {
 	      switch(c){
                   case 'a':
         	              //palSetPad(GPIOD, GPIOD_LED3);
+                	      orangeControl = 'a';
                 	      percentage = 5000;
                           break;
                   case 'A':
                           //palClearPad(GPIOD, GPIOD_LED3);
+             	          orangeControl = 'A';
                           percentage = 0;
                 	      break;
 	              case 'q':
 	            	      //palSetPad(GPIOD, GPIOD_LED3);
-	                      percentage = percentage + 500;
+            	          orangeControl = 'q';
+	                      //percentage = percentage + 500;
 	            	      break;
 	              case 'z':
 	                      //palClearPad(GPIOD, GPIOD_LED3);
-	                      if (percentage > 0) percentage = percentage - 500;
+            	          orangeControl = 'z';
+	                      //if (percentage > 0) percentage = percentage - 500;
 	            	      break;
 
 
@@ -680,14 +678,20 @@ int main(void) {
 	            	      break;
 
 	              case 'h':
-	            	  	  percentage = 555;
-	                      /*while (c != 'H'){
-	                    	  percentage = 10000;
-                        	  chThdSleepMilliseconds(500);
-	                    	  percentage = 0;
-                        	  chThdSleepMilliseconds(500);
+	            	  	  //percentage = 555;
+	            	  	  orangeControl = 'h';
+	            	  	  //newPercentage = TRUE;
+	            	      break;
 
-	                      }*/
+	              case 'y':
+	            	  	  //percentage = 555;
+	            	  	  orangeControl = 'y';
+	            	  	  //newPercentage = TRUE;
+	            	      break;
+
+
+	              case 'k':
+	            	  	  percentage3 = 555;
 	            	      break;
 
 
