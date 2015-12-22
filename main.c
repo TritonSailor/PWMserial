@@ -46,11 +46,11 @@ static double blueIntensity;
 static double extIntensity;
 
 
-static uint32_t orangePeriod;
-static uint32_t greenPeriod;
-static uint32_t redPeriod;
-static uint32_t bluePeriod;
-static uint32_t extPeriod;
+static uint32_t orangePeriod = 20000;
+static uint32_t greenPeriod = 20000;
+static uint32_t redPeriod = 20000;
+static uint32_t bluePeriod = 20000;
+static uint32_t extPeriod = 20000;
 
 
 static uint8_t orangeControl;
@@ -317,12 +317,12 @@ static THD_FUNCTION(Thd1, arg) {
 
     else if(orangeControl =='q'){
       orangePercentage = orangePercentage + 500;
-      orangeControl='p';
+      orangeControl='~';
 
     }
     else if(orangeControl =='z'){
       if (orangePercentage > 0) orangePercentage = orangePercentage - 500;
-      orangeControl='p';
+      orangeControl='~';
     }
 
     else if(orangeControl == 'h'){
@@ -331,16 +331,25 @@ static THD_FUNCTION(Thd1, arg) {
   	  palTogglePad(GPIOD, GPIOD_LED3);
   	  chThdSleepMilliseconds(500);
     }
+    else if(orangeControl =='y'){
+      orangePeriod = orangePeriod - 5000;
+      orangeControl='H';
 
+    }
+    else if(orangeControl =='Y'){
+      orangePeriod = orangePeriod + 5000;
+      orangeControl='H';
+
+    }
     else if(orangeControl == 'H'){
       pwmEnableChannel(&PWMD1, 0, PWM_PERCENTAGE_TO_WIDTH(&PWMD1, orangePercentage));
       pwmEnableChannelNotification(&PWMD1, 0);
       pwmEnablePeriodicNotification(&PWMD1);
 
-      orangePeriod = 20000;
+      //orangePeriod = 20000;
       orangeIntensity = cos(2*M_PI/orangePeriod*time);
       orangePercentage=orangeIntensity*10000;
-  	  chThdSleepMilliseconds(1);
+  	  //chThdSleepMilliseconds(1);
     }
 
     else if(orangeControl!='h'||'H' || 'A'){
@@ -381,12 +390,12 @@ static THD_FUNCTION(Thd2, arg) {
 
     else if(greenControl =='w'){
       greenPercentage = greenPercentage + 500;
-      greenControl='p';
+      greenControl='~';
 
     }
     else if(greenControl =='x'){
       if (greenPercentage > 0) greenPercentage = greenPercentage - 500;
-      greenControl='p';
+      greenControl='~';
     }
 
     else if(greenControl == 'j'){
@@ -395,16 +404,25 @@ static THD_FUNCTION(Thd2, arg) {
   	  palTogglePad(GPIOD, GPIOD_LED4);
   	  chThdSleepMilliseconds(500);
     }
+    else if(greenControl =='u'){
+      greenPeriod = greenPeriod - 5000;
+      greenControl='J';
 
+    }
+    else if(greenControl =='U'){
+      greenPeriod = greenPeriod + 5000;
+      greenControl='J';
+
+    }
     else if(greenControl == 'J'){
       pwmEnableChannel(&PWMD3, 0, PWM_PERCENTAGE_TO_WIDTH(&PWMD3, greenPercentage));
       pwmEnableChannelNotification(&PWMD3, 0);
       pwmEnablePeriodicNotification(&PWMD3);
 
-      greenPeriod = 20000;
+      //greenPeriod = 20000;
       greenIntensity = cos(2*M_PI/greenPeriod*time);
       greenPercentage=greenIntensity*10000;
-  	  chThdSleepMilliseconds(1);
+  	  //chThdSleepMilliseconds(1);
     }
 
     else if(greenControl!='j'||'S' || 'J'){
@@ -465,12 +483,12 @@ static THD_FUNCTION(Thd3, arg) {
 
 	    else if(redControl =='e'){
 	      redPercentage = redPercentage + 500;
-	      redControl='p';
+	      redControl='~';
 
 	    }
 	    else if(redControl =='c'){
 	      if (redPercentage > 0) redPercentage = redPercentage - 500;
-	      redControl='p';
+	      redControl='~';
 	    }
 
 	    else if(redControl == 'k'){
@@ -479,16 +497,25 @@ static THD_FUNCTION(Thd3, arg) {
 	  	  palTogglePad(GPIOD, GPIOD_LED5);
 	  	  chThdSleepMilliseconds(500);
 	    }
+	    else if(redControl =='i'){
+	      redPeriod = redPeriod - 5000;
+	      redControl='K';
 
+	    }
+	    else if(redControl =='I'){
+	      redPeriod = redPeriod + 5000;
+	      redControl='K';
+
+	    }
 	    else if(redControl == 'K'){
 	      pwmEnableChannel(&PWMD4, 0, PWM_PERCENTAGE_TO_WIDTH(&PWMD4, redPercentage));
 	      pwmEnableChannelNotification(&PWMD4, 0);
 	      pwmEnablePeriodicNotification(&PWMD4);
 
-	      redPeriod = 20000;
+	      //redPeriod = 20000;
 	      redIntensity = cos(2*M_PI/redPeriod*time);
 	      redPercentage=redIntensity*10000;
-	  	  chThdSleepMilliseconds(1);
+	  	 //chThdSleepMilliseconds(1);
 	    }
 
 	    else if(redControl!='k'||'D' || 'K'){
@@ -525,12 +552,12 @@ static THD_FUNCTION(Thd4, arg) {
 
 	    else if(blueControl =='r'){
 	      bluePercentage = bluePercentage + 500;
-	      blueControl='p';
+	      blueControl='~';
 
 	    }
 	    else if(blueControl =='v'){
 	      if (bluePercentage > 0) bluePercentage = bluePercentage - 500;
-	      blueControl='p';
+	      blueControl='~';
 	    }
 
 	    else if(blueControl == 'l'){
@@ -539,16 +566,25 @@ static THD_FUNCTION(Thd4, arg) {
 	  	  palTogglePad(GPIOD, GPIOD_LED6);
 	  	  chThdSleepMilliseconds(500);
 	    }
+	    else if(blueControl =='o'){
+	      bluePeriod = bluePeriod - 5000;
+	      blueControl='L';
 
+	    }
+	    else if(blueControl =='O'){
+	      bluePeriod = bluePeriod + 5000;
+	      blueControl='L';
+
+	    }
 	    else if(blueControl == 'L'){
 	      pwmEnableChannel(&PWMD5, 0, PWM_PERCENTAGE_TO_WIDTH(&PWMD5, bluePercentage));
 	      pwmEnableChannelNotification(&PWMD5, 0);
 	      pwmEnablePeriodicNotification(&PWMD5);
 
-	      bluePeriod = 20000;
+	      //bluePeriod = 20000;
 	      blueIntensity = cos(2*M_PI/bluePeriod*time);
 	      bluePercentage=blueIntensity*10000;
-	  	  chThdSleepMilliseconds(1);
+	  	  //chThdSleepMilliseconds(1);
 	    }
 
 	    else if(blueControl!='l'||'F' || 'L'){
@@ -584,12 +620,12 @@ static THD_FUNCTION(Thd5, arg) {
 
     else if(extControl =='t'){
       extPercentage = extPercentage + 500;
-      extControl='p';
+      extControl='~';
 
     }
     else if(extControl =='b'){
       if (extPercentage > 0) extPercentage = extPercentage - 500;
-      extControl='p';
+      extControl='~';
     }
 
     else if(extControl == ';'){
@@ -598,16 +634,25 @@ static THD_FUNCTION(Thd5, arg) {
   	  palTogglePad(GPIOD, GPIOD_PIN7);
   	  chThdSleepMilliseconds(500);
     }
+    else if(extControl =='p'){
+      extPeriod = extPeriod - 5000;
+      extControl=':';
 
+    }
+    else if(extControl =='P'){
+      extPeriod = extPeriod + 5000;
+      extControl=':';
+
+    }
     else if(extControl == ':'){
       pwmEnableChannel(&PWMD9, 0, PWM_PERCENTAGE_TO_WIDTH(&PWMD9, extPercentage));
       pwmEnableChannelNotification(&PWMD9, 0);
       pwmEnablePeriodicNotification(&PWMD9);
 
-      extPeriod = 20000;
+      //extPeriod = 20000;
       extIntensity = cos(2*M_PI/extPeriod*time);
       extPercentage=extIntensity*10000;
-  	  chThdSleepMilliseconds(1);
+  	  //chThdSleepMilliseconds(1);
     }
 
     else if(extControl!=';'||'G' || ':'){
@@ -692,9 +737,14 @@ int main(void) {
 	              case 'h':
 	            	  	  orangeControl = 'h';
 	            	      break;
-
 	              case 'H':
 	            	  	  orangeControl = 'H';
+	            	      break;
+	              case 'y':
+	            	  	  orangeControl = 'y';
+	            	      break;
+	              case 'Y':
+	            	  	  orangeControl = 'Y';
 	            	      break;
 
                   case 's':
@@ -714,6 +764,12 @@ int main(void) {
 	            	      break;
 	              case 'J':
 	            	  	  greenControl = 'J';
+	            	      break;
+	              case 'u':
+	            	  	  greenControl = 'u';
+	            	      break;
+	              case 'U':
+	            	  	  greenControl = 'U';
 	            	      break;
 
                   case 'd':
@@ -735,6 +791,12 @@ int main(void) {
 	              case 'K':
 	            	  	  redControl = 'K';
 	            	      break;
+	              case 'i':
+	            	  	  redControl = 'i';
+	            	      break;
+	              case 'I':
+	            	  	  redControl = 'I';
+	            	      break;
 
 
                   case 'f':
@@ -752,9 +814,14 @@ int main(void) {
 	              case 'l':
 	            	  	  blueControl = 'l';
 	            	      break;
-
 	              case 'L':
 	            	  	  blueControl = 'L';
+	            	      break;
+	              case 'o':
+	            	  	  blueControl = 'o';
+	            	      break;
+	              case 'O':
+	            	  	  blueControl = 'O';
 	            	      break;
 
                   case 'g':
@@ -772,9 +839,14 @@ int main(void) {
 	              case ';':
 	            	  	  extControl = ';';
 	            	      break;
-
 	              case ':':
 	            	  	  extControl = ':';
+	            	      break;
+	              case 'p':
+	            	  	  extControl = 'p';
+	            	      break;
+	              case 'P':
+	            	      extControl = 'P';
 	            	      break;
 
 
